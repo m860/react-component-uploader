@@ -1,1 +1,36 @@
 .uploader
+  display: flex
+  flex-direction: column
+  background-color: silver
+  padding: 3px
+  flex-wrap: wrap
+  > div
+    display: flex
+  button.button-file
+    position: relative
+    overflow: hidden
+    input[type=file]
+      position: absolute
+      top: 0
+      bottom: 0
+      left: 0
+      right: 0
+      opacity: 0
+
+  .file
+    display: flex
+    padding: 5px 10px
+    background-color: #ee6e73
+    border: solid 1px #ee6e73
+    border-radius: 4px
+    color: white
+    align-items: center
+    justify-content: space-between
+    margin-right: 3px
+    a
+      display: flex
+      justify-content: center
+      align-items: center
+      width: 16px
+      color: white
+      margin-left: 5px

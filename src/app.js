@@ -1,20 +1,12 @@
 import React, {PropTypes, Component} from 'react'
 import ReactDOM from 'react-dom'
 import './sass/Uploader.sass'
-import Panel from './components/Uploader'
+import Uploader from './components/Uploader'
 
-class PanelDemo extends Component{
+class UploaderDemo extends Component{
 	render(){
 		return (
-			<Uploader title="Panel Title" renderRight={()=>{
-				return (
-					<button type="button" onClick={()=>{
-						alert('pressed');
-					}}>press me</button>
-				);
-			}}>
-				<p>panel content</p>
-			</Uploader>
+			<Uploader></Uploader>
 		);
 	}
 }
@@ -22,9 +14,9 @@ class PanelDemo extends Component{
 class Example extends Component {
 	render() {
 		return (
-			<div style={{paddingBottom:"50px"}}>
-				<h5>Simple Panel</h5>
-				<PanelDemo/>
+			<div>
+				<h5>Simple Uploader</h5>
+				<UploaderDemo/>
 			</div>
 		);
 	}
