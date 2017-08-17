@@ -1,3 +1,3 @@
 module.exports={
-	Panel:require('./components/Panel').default
+	Panel:require('./components/Uploader.js').default
 };
