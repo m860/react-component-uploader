@@ -1,6 +1,6 @@
 {
   "name": "react-component-uploader",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -54,9 +54,10 @@
     "webpack-dev-server": "^1.14.1"
   },
   "peerDependencies": {
-    "prop-types": "^15.5.10",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
-    "classnames": "^2.2.4"
+    "prop-types": ">=15.5.10",
+    "react": ">=15.6.1",
+    "react-dom": ">=15.6.1",
+    "classnames": ">=2.2.4",
+    "axios": ">=0.16.2"
   }
 }

@@ -1,3 +1,3 @@
 module.exports={
-	Uploader:require('./components/Uploader.js').default
+	FileButton:require('./components/FileButton.js').default
 };

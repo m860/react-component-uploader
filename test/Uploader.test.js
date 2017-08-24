@@ -3,7 +3,7 @@
  */
 import React from "react";
 import {mount} from "enzyme";
-import Panel from '../src/components/Uploader'
+import Panel from '../src/components/FileButton'
 
 describe("render `<Panel/>` with data source have 2 records", ()=> {
 	const title='I am panel title';
