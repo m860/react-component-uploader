@@ -27,3 +27,9 @@ $ npm i react-component-uploader --save
 import {FileButton} from 'react-component-uploader'
 ```
 
+## TODO
+- [ ] 上传进度条
+- [ ] 扩展名
+- [ ] 文件大小限制
+- [ ] FileList
+
