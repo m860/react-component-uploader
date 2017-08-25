@@ -2,7 +2,47 @@ import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
 import axios from 'axios'
 
+/**
+ * FileButton - 上传按钮 {@link ./src/app.js example}
+ *
+ * @example <caption>上传单个文件</caption>
+ *
+ * <FileButton
+ * url="http://0.0.0.0:8081/upload"
+ * headers={{
+ *						'content-type': 'multipart/form-data',
+ *						"x-produce-authentication":"74533907dc42a6c5a4ea3a5dba7da4680d79b3c3ba203501d6154d3829642ea5ea5361474c7609b25a6fe8b64d15c8ce33dfb40bee64f587bef32ce07c75cfb2471f22172ba16fba2cacea623da2a72c3da864e70dbc0b"
+ *					}}
+ * formData={{
+ *						businessType:"gongyi"
+ *					}}
+ * onUpload={(err,{data})=>{
+ *					if(err){
+ *						alert(err.message);
+ *					}
+ *					else{
+ *						if(data.success){
+ *							const files=this.state.files.concat(data.data);
+ *							this.setState({files});
+ *						}
+ *						else{
+ *							alert(data.message)
+ *						}
+ *					}
+ *				}}>上传文件</FileButton>
+ *
+ * */
 export default class FileButton extends PureComponent {
+	/**
+	 * @property {?Object} style
+	 * @property {?String} className
+	 * @property {String} url - 上传文件的url地址
+	 * @property {?Object} headers [{"content-type": "multipart/form-data"}] - request headers
+	 * @property {?Object} formData [{}]
+	 * @property {?Boolean} multiple [false] - 是否可以选择多个文件
+	 * @property {?Function} onUpload [(err,res)=>null] - 上传成功/失败的回调
+	 * @property {any} children ["添加文件"]
+	 * */
 	static propTypes = {
 		style: PropTypes.object,
 		className: PropTypes.string,
