@@ -1,6 +1,5 @@
 import React, {PropTypes, Component} from 'react'
 import ReactDOM from 'react-dom'
-import './sass/file-button.sass'
 import FileButton from './components/FileButton'
 
 class SingleUpload extends Component {

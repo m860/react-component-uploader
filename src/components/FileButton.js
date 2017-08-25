@@ -1,6 +1,5 @@
 import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
-import classnames from 'classnames'
 import axios from 'axios'
 
 export default class FileButton extends PureComponent {
@@ -47,14 +46,19 @@ export default class FileButton extends PureComponent {
 	}
 
 	render() {
+		const style=Object.assign({
+			position:"relative",
+			overflow:"hidden"
+		},this.props.style);
 		return (
 			<button
-				className={classnames('file-button',this.props.className)}
-				style={this.props.style}
+				className={this.props.className}
+				style={style}
 				type="button">
 				<input
 					multiple={this.props.multiple}
 					type="file"
+					style={{position:"absolute",top:0,bottom:0,left:0,right:0,width:"100%",opacity:0}}
 					onChange={event=>{
 						this._upload(event.target.files)
 							.then((...args)=>{
