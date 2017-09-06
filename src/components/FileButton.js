@@ -8,28 +8,28 @@ import axios from 'axios'
  * @example <caption>上传单个文件</caption>
  *
  * <FileButton
- * url="http://0.0.0.0:8081/upload"
- * headers={{
- *						'content-type': 'multipart/form-data',
- *						"x-produce-authentication":"74533907dc42a6c5a4ea3a5dba7da4680d79b3c3ba203501d6154d3829642ea5ea5361474c7609b25a6fe8b64d15c8ce33dfb40bee64f587bef32ce07c75cfb2471f22172ba16fba2cacea623da2a72c3da864e70dbc0b"
- *					}}
- * formData={{
- *						businessType:"gongyi"
- *					}}
- * onUpload={(err,{data})=>{
- *					if(err){
- *						alert(err.message);
- *					}
- *					else{
- *						if(data.success){
- *							const files=this.state.files.concat(data.data);
- *							this.setState({files});
- *						}
- *						else{
- *							alert(data.message)
- *						}
- *					}
- *				}}>上传文件</FileButton>
+ * 		url="http://0.0.0.0:8081/upload"
+ * 		headers={{
+ *			'content-type': 'multipart/form-data',
+ *			"x-produce-authentication":"xxxx"
+ *		}}
+ *      formData={{
+ *			businessType:"gongyi"
+ *		}}
+ *      onUpload={(err,{data})=>{
+ *			if(err){
+ *			alert(err.message);
+ *		}
+ *		else{
+ *			if(data.success){
+ *				const files=this.state.files.concat(data.data);
+ *				this.setState({files});
+ *			}
+ *			else{
+ *				alert(data.message)
+ *			}
+ *		}
+ *	}}>上传文件</FileButton>
  *
  * */
 export default class FileButton extends PureComponent {
@@ -41,6 +41,7 @@ export default class FileButton extends PureComponent {
 	 * @property {?Object} formData [{}]
 	 * @property {?Boolean} multiple [false] - 是否可以选择多个文件
 	 * @property {?Function} onUpload [(err,res)=>null] - 上传成功/失败的回调
+	 * @property {?Function} onUploadProgress - 上传进度条
 	 * @property {any} children ["添加文件"]
 	 * */
 	static propTypes = {
@@ -49,14 +50,13 @@ export default class FileButton extends PureComponent {
 		url: PropTypes.string.isRequired,
 		headers: PropTypes.object,
 		onUpload: PropTypes.func,
+		onUploadProgress: PropTypes.func,
 		formData: PropTypes.object,
 		multiple: PropTypes.bool
 	};
 	static defaultProps = {
 		children: "添加文件",
-		headers: {
-			"content-type": "multipart/form-data"
-		},
+		headers: {},
 		onUpload: (err)=>null,
 		formData: {},
 		multiple: false
@@ -64,9 +64,31 @@ export default class FileButton extends PureComponent {
 
 	constructor(props) {
 		super(props);
+		this._onUploadProgress = props.onUploadProgress || ((progressEvent)=> {
+				if (progressEvent.lengthComputable) {
+					const percent = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+					this.setState(
+						Object.assign({}, this.state, {
+							uploadedPercent: percent,
+							lengthComputable: true
+						})
+					)
+				}
+			});
 		this.state = {
-			files: props.value
+			files: props.value,
+			useDefaultUploadProgress: !props.onUploadProgress,
+			uploadedPercent: 0,//0~100
+			uploading: false,
+			lengthComputable: false
 		};
+	}
+
+	get _text() {
+		if (this.state.useDefaultUploadProgress && this.state.uploading && this.state.lengthComputable) {
+			return `${this.state.uploadedPercent}%`;
+		}
+		return this.props.children;
 	}
 
 	_upload(files) {
@@ -77,39 +99,81 @@ export default class FileButton extends PureComponent {
 		for (let i = 0; i < files.length; i++) {
 			formData.append("files", files[i], files[i].name);
 		}
+
 		return axios({
 			url: this.props.url,
 			method: "post",
-			headers: this.props.headers,
-			data: formData
+			headers: Object.assign({
+				"content-type": "multipart/form-data"
+			}, this.props.headers),
+			data: formData,
+			onUploadProgress: this._onUploadProgress
 		});
 	}
 
 	render() {
-		const style=Object.assign({
-			position:"relative",
-			overflow:"hidden"
-		},this.props.style);
+		const style = Object.assign({}, this.props.style, {
+			position: "relative",
+			overflow: "hidden"
+		});
 		return (
 			<button
+				disabled={this.state.uploading}
 				className={this.props.className}
 				style={style}
 				type="button">
 				<input
 					multiple={this.props.multiple}
 					type="file"
-					style={{position:"absolute",top:0,bottom:0,left:0,right:0,width:"100%",opacity:0}}
+					disabled={this.state.uploading}
+					style={styles.inputFile}
 					onChange={event=>{
-						this._upload(event.target.files)
-							.then((...args)=>{
-								this.props.onUpload(null,...args);
-							})
-							.catch(...args=>{
-								this.props.onUpload(...args);
-							})
+						const state = Object.assign({}, this.state, {
+							uploading: true
+						});
+						const files=event.target.files;
+						this.setState(state,()=>{
+							this._upload(files)
+								.then((...args)=>{
+									this.setState(
+										Object.assign({},this.state,{
+											uploading:false,
+											lengthComputable:false
+										}),
+										()=>{
+											this.props.onUpload(null,...args);
+										}
+									);
+								})
+								.catch(...args=>{
+									this.setState(
+										Object.assign({},this.state,{
+											uploading:false,
+											lengthComputable:false
+										}),
+										()=>{
+											this.props.onUpload(...args);
+										}
+									);
+								});
+						});
+
 					}}/>
-				{this.props.children}
+				{this._text}
 			</button>
 		);
 	}
 }
+
+
+const styles = {
+	inputFile: {
+		position: "absolute",
+		top: 0,
+		bottom: 0,
+		left: 0,
+		right: 0,
+		width: "100%",
+		opacity: 0
+	}
+};

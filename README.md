@@ -9,11 +9,13 @@
 
 <!-- endbadge -->
 
-[examples & api document](./API.md)
+[Examples & Api Documentation](./API.md)
 
 ## Screen Shot
 
 <img src="https://raw.githubusercontent.com/m860/react-component-uploader/master/src/simple-uploader.gif"/>
+
+<img src="https://raw.githubusercontent.com/m860/react-component-uploader/master/src/upload-progress.gif"/>
 
 ## Install
 
@@ -28,7 +30,7 @@ import {FileButton} from 'react-component-uploader'
 ```
 
 ## TODO
-- [ ] 上传进度条
+- [x] 上传进度条
 - [ ] 扩展名
 - [ ] 文件大小限制
 - [ ] FileList

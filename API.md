@@ -7,7 +7,7 @@
 
 ## FileButton
 
-[src/components/FileButton.js:35-115](https://github.com/m860/react-component-uploader/blob/25b6d25a874da2b65c78c9a427529dc52504715c/src/components/FileButton.js#L35-L115 "Source code on GitHub")
+[src/components/FileButton.js:35-166](https://github.com/m860/react-component-uploader/blob/3f208bfb5646a8705a536f375bff6e85b9116bc5/src/components/FileButton.js#L35-L166 "Source code on GitHub")
 
 **Extends PureComponent**
 
@@ -23,33 +23,33 @@ _上传单个文件_
 
 ```javascript
 <FileButton
-url="http://0.0.0.0:8081/upload"
-headers={{
-					'content-type': 'multipart/form-data',
-					"x-produce-authentication":"74533907dc42a6c5a4ea3a5dba7da4680d79b3c3ba203501d6154d3829642ea5ea5361474c7609b25a6fe8b64d15c8ce33dfb40bee64f587bef32ce07c75cfb2471f22172ba16fba2cacea623da2a72c3da864e70dbc0b"
-				}}
-formData={{
-					businessType:"gongyi"
-				}}
-onUpload={(err,{data})=>{
-				if(err){
-					alert(err.message);
-				}
-				else{
-					if(data.success){
-						const files=this.state.files.concat(data.data);
-						this.setState({files});
-					}
-					else{
-						alert(data.message)
-					}
-				}
-			}}>上传文件</FileButton>
+		url="http://0.0.0.0:8081/upload"
+		headers={{
+		'content-type': 'multipart/form-data',
+		"x-produce-authentication":"xxxx"
+	}}
+     formData={{
+		businessType:"gongyi"
+	}}
+     onUpload={(err,{data})=>{
+		if(err){
+		alert(err.message);
+	}
+	else{
+		if(data.success){
+			const files=this.state.files.concat(data.data);
+			this.setState({files});
+		}
+		else{
+			alert(data.message)
+		}
+	}
+}}>上传文件</FileButton>
 ```
 
 ### propTypes
 
-[src/components/FileButton.js:46-54](https://github.com/m860/react-component-uploader/blob/25b6d25a874da2b65c78c9a427529dc52504715c/src/components/FileButton.js#L46-L54 "Source code on GitHub")
+[src/components/FileButton.js:47-56](https://github.com/m860/react-component-uploader/blob/3f208bfb5646a8705a536f375bff6e85b9116bc5/src/components/FileButton.js#L47-L56 "Source code on GitHub")
 
 **Properties**
 
@@ -60,4 +60,5 @@ onUpload={(err,{data})=>{
 -   `formData` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** [{}]
 -   `multiple` **[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** [false] - 是否可以选择多个文件
 -   `onUpload` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)?** [(err,res)=>null] - 上传成功/失败的回调
+-   `onUploadProgress` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)?** 上传进度条
 -   `children` **any** ["添加文件"]

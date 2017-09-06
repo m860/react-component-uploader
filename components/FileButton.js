@@ -34,28 +34,28 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @example <caption>上传单个文件</caption>
  *
  * <FileButton
- * url="http://0.0.0.0:8081/upload"
- * headers={{
- *						'content-type': 'multipart/form-data',
- *						"x-produce-authentication":"74533907dc42a6c5a4ea3a5dba7da4680d79b3c3ba203501d6154d3829642ea5ea5361474c7609b25a6fe8b64d15c8ce33dfb40bee64f587bef32ce07c75cfb2471f22172ba16fba2cacea623da2a72c3da864e70dbc0b"
- *					}}
- * formData={{
- *						businessType:"gongyi"
- *					}}
- * onUpload={(err,{data})=>{
- *					if(err){
- *						alert(err.message);
- *					}
- *					else{
- *						if(data.success){
- *							const files=this.state.files.concat(data.data);
- *							this.setState({files});
- *						}
- *						else{
- *							alert(data.message)
- *						}
- *					}
- *				}}>上传文件</FileButton>
+ * 		url="http://0.0.0.0:8081/upload"
+ * 		headers={{
+ *			'content-type': 'multipart/form-data',
+ *			"x-produce-authentication":"xxxx"
+ *		}}
+ *      formData={{
+ *			businessType:"gongyi"
+ *		}}
+ *      onUpload={(err,{data})=>{
+ *			if(err){
+ *			alert(err.message);
+ *		}
+ *		else{
+ *			if(data.success){
+ *				const files=this.state.files.concat(data.data);
+ *				this.setState({files});
+ *			}
+ *			else{
+ *				alert(data.message)
+ *			}
+ *		}
+ *	}}>上传文件</FileButton>
  *
  * */
 var FileButton = function (_PureComponent) {
@@ -69,6 +69,7 @@ var FileButton = function (_PureComponent) {
   * @property {?Object} formData [{}]
   * @property {?Boolean} multiple [false] - 是否可以选择多个文件
   * @property {?Function} onUpload [(err,res)=>null] - 上传成功/失败的回调
+  * @property {?Function} onUploadProgress - 上传进度条
   * @property {any} children ["添加文件"]
   * */
 	function FileButton(props) {
@@ -76,8 +77,21 @@ var FileButton = function (_PureComponent) {
 
 		var _this = _possibleConstructorReturn(this, (FileButton.__proto__ || Object.getPrototypeOf(FileButton)).call(this, props));
 
+		_this._onUploadProgress = props.onUploadProgress || function (progressEvent) {
+			if (progressEvent.lengthComputable) {
+				var percent = Math.round(progressEvent.loaded / progressEvent.total * 100);
+				_this.setState(Object.assign({}, _this.state, {
+					uploadedPercent: percent,
+					lengthComputable: true
+				}));
+			}
+		};
 		_this.state = {
-			files: props.value
+			files: props.value,
+			useDefaultUploadProgress: !props.onUploadProgress,
+			uploadedPercent: 0, //0~100
+			uploading: false,
+			lengthComputable: false
 		};
 		return _this;
 	}
@@ -92,11 +106,15 @@ var FileButton = function (_PureComponent) {
 			for (var i = 0; i < files.length; i++) {
 				formData.append("files", files[i], files[i].name);
 			}
+
 			return (0, _axios2.default)({
 				url: this.props.url,
 				method: "post",
-				headers: this.props.headers,
-				data: formData
+				headers: Object.assign({
+					"content-type": "multipart/form-data"
+				}, this.props.headers),
+				data: formData,
+				onUploadProgress: this._onUploadProgress
 			});
 		}
 	}, {
@@ -104,39 +122,65 @@ var FileButton = function (_PureComponent) {
 		value: function render() {
 			var _this2 = this;
 
-			var style = Object.assign({
+			var style = Object.assign({}, this.props.style, {
 				position: "relative",
 				overflow: "hidden"
-			}, this.props.style);
+			});
 			return _react2.default.createElement(
 				"button",
 				{
+					disabled: this.state.uploading,
 					className: this.props.className,
 					style: style,
 					type: "button" },
 				_react2.default.createElement("input", {
 					multiple: this.props.multiple,
 					type: "file",
-					style: { position: "absolute", top: 0, bottom: 0, left: 0, right: 0, width: "100%", opacity: 0 },
+					disabled: this.state.uploading,
+					style: styles.inputFile,
 					onChange: function onChange(event) {
-						var _upload$then;
+						var state = Object.assign({}, _this2.state, {
+							uploading: true
+						});
+						var files = event.target.files;
+						_this2.setState(state, function () {
+							var _upload$then;
 
-						(_upload$then = _this2._upload(event.target.files).then(function () {
-							var _props;
+							(_upload$then = _this2._upload(files).then(function () {
+								for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+									args[_key] = arguments[_key];
+								}
 
-							for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-								args[_key] = arguments[_key];
-							}
+								_this2.setState(Object.assign({}, _this2.state, {
+									uploading: false,
+									lengthComputable: false
+								}), function () {
+									var _props;
 
-							(_props = _this2.props).onUpload.apply(_props, [null].concat(args));
-						})).catch.apply(_upload$then, _toConsumableArray(function (args) {
-							var _props2;
+									(_props = _this2.props).onUpload.apply(_props, [null].concat(args));
+								});
+							})).catch.apply(_upload$then, _toConsumableArray(function (args) {
+								_this2.setState(Object.assign({}, _this2.state, {
+									uploading: false,
+									lengthComputable: false
+								}), function () {
+									var _props2;
 
-							(_props2 = _this2.props).onUpload.apply(_props2, _toConsumableArray(args));
-						}));
+									(_props2 = _this2.props).onUpload.apply(_props2, _toConsumableArray(args));
+								});
+							}));
+						});
 					} }),
-				this.props.children
+				this._text
 			);
+		}
+	}, {
+		key: "_text",
+		get: function get() {
+			if (this.state.useDefaultUploadProgress && this.state.uploading && this.state.lengthComputable) {
+				return this.state.uploadedPercent + "%";
+			}
+			return this.props.children;
 		}
 	}]);
 
@@ -149,14 +193,13 @@ FileButton.propTypes = {
 	url: _propTypes2.default.string.isRequired,
 	headers: _propTypes2.default.object,
 	onUpload: _propTypes2.default.func,
+	onUploadProgress: _propTypes2.default.func,
 	formData: _propTypes2.default.object,
 	multiple: _propTypes2.default.bool
 };
 FileButton.defaultProps = {
 	children: "添加文件",
-	headers: {
-		"content-type": "multipart/form-data"
-	},
+	headers: {},
 	onUpload: function onUpload(err) {
 		return null;
 	},
@@ -164,3 +207,16 @@ FileButton.defaultProps = {
 	multiple: false
 };
 exports.default = FileButton;
+
+
+var styles = {
+	inputFile: {
+		position: "absolute",
+		top: 0,
+		bottom: 0,
+		left: 0,
+		right: 0,
+		width: "100%",
+		opacity: 0
+	}
+};

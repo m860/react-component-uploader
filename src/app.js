@@ -23,19 +23,19 @@ class SingleUpload extends Component {
 						businessType:"gongyi"
 					}}
 					onUpload={(err,{data})=>{
-					if(err){
-						alert(err.message);
-					}
-					else{
-						if(data.success){
-							const files=this.state.files.concat(data.data);
-							this.setState({files});
+						if(err){
+							alert(err.message);
 						}
 						else{
-							alert(data.message)
+							if(data.success){
+								const files=this.state.files.concat(data.data);
+								this.setState({files});
+							}
+							else{
+								alert(data.message)
+							}
 						}
-					}
-				}}>上传文件</FileButton>
+					}}>上传文件</FileButton>
 				<div style={{display:"flex",flexDirection:"column"}}>
 					{this.state.files.map((item, index)=> {
 						return (
@@ -63,7 +63,7 @@ class MultipleUpload extends Component {
 			<div style={{display:"flex",flexDirection:"column"}}>
 				<FileButton
 					multiple={true}
-					url="http://0.0.0.0:8081/upload"
+					url="http://39.108.11.254:8081/upload"
 					headers={{
 						'content-type': 'multipart/form-data',
 						"x-produce-authentication":"74533907dc42a6c5a4ea3a5dba7da4680d79b3c3ba203501d6154d3829642ea5ea5361474c7609b25a6fe8b64d15c8ce33dfb40bee64f587bef32ce07c75cfb2471f22172ba16fba2cacea623da2a72c3da864e70dbc0b"
